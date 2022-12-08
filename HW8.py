@@ -9,22 +9,22 @@ def get_restaurant_data(db_filename):
     of each restaurant in the database.
     """
 
-    path_data = os.path.dirname(os.path.abspath(__file__))
-    conn = sqlite3.connect(path_data+'/'+ db_filename)
+    path = os.path.dirname(os.path.abspath(__file__))
+    conn = sqlite3.connect(path + '/' + db_filename)
     cur = conn.cursor()
-    rest_list = []
+    list = []
     cur.execute("SELECT name, building, category, rating FROM restaurants JOIN buildings ON restaurants.building_id = buildings.id JOIN categories ON restaurants.category_id = categories.id")
-    restaurant = cur.fetchall()
+    restaurants = cur.fetchall()
     
 
-    for i in restaurant:
+    for restaurant in restaurants:
         dict = {}
-        dict['name'] = i[0]
-        dict['category'] = i[2]
-        dict['building'] = i[1]
-        dict['rating'] = i[3]
-        rest_list.append(dict)
-    return rest_list
+        dict['name'] = restaurant[0]
+        dict['category'] = restaurant[2]
+        dict['building'] = restaurant[1]
+        dict['rating'] = restaurant[3]
+        list.append(dict)
+    return list
 
 def barchart_restaurant_categories(db_filename):
     """
@@ -33,30 +33,24 @@ def barchart_restaurant_categories(db_filename):
     also create a bar chart with restaurant categories and the counts of each category.
     """
     path = os.path.dirname(os.path.abspath(__file__))
-    conn = sqlite3.connect(path+'/'+db_filename)
+    conn = sqlite3.connect(path + '/' + db_filename)
     cur = conn.cursor()
-    cur.execute("SELECT COUNT(categories.category), categories.category FROM restaurants JOIN categories ON restaurants.category_id = categories.id GROUP BY category")
-    restaurant = cur.fetchall()
+    cur.execute("SELECT category, COUNT(category_id) FROM restaurants JOIN categories ON restaurants.category_id = categories.id GROUP BY category_idORDER BY COUNT(category_id) ASC")
+    restaurants = cur.fetchall()
+    data_set = {}
+    for restaurant in restaurants:
+        data_set[restaurant[0]] = data_set.get(restaurant, 0) + restaurant[1]
 
-    dict = {}
-    for i in restaurant:
-        count = i[0]
-        category = i[1]
-        dict[category] = count
-    
-    num_restaurants = []
-    category = []
-    for i in dict:
-        num_restaurants.append(i)
-        category.append(dict[i])
-    
-    plt.barh(num_restaurants, category)
-    plt.xlabel("Number of Restaurants")
+    categories = list(data_set.keys())
+    val = list(data_set.values())
+ 
+    plt.barh(categories, val)
     plt.ylabel("Restaurant Categories")
-    plt.title("Types of Restaurants on South University Ave")
+    plt.xlabel("No. of Restaurants")
+    plt.title("Types of Restaurants in South University")
+    plt.tight_layout()
     plt.show()
-
-    return dict
+    return data_set
 
 #EXTRA CREDIT
 def highest_rated_category(db_filename):#Do this through DB as well
