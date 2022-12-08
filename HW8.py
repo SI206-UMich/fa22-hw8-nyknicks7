@@ -41,10 +41,10 @@ def barchart_restaurant_categories(db_filename):
     for restaurant in restaurants:
         data_set[restaurant[0]] = data_set.get(restaurant, 0) + restaurant[1]
 
-    categories = list(data_set.keys())
+    groups = list(data_set.keys())
     val = list(data_set.values())
  
-    plt.barh(categories, val)
+    plt.barh(groups, val)
     plt.ylabel("Restaurant Categories")
     plt.xlabel("No. of Restaurants")
     plt.title("Types of Restaurants in South University")
