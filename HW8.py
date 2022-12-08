@@ -2,14 +2,29 @@ import matplotlib.pyplot as plt
 import os
 import sqlite3
 import unittest
-
 def get_restaurant_data(db_filename):
     """
     This function accepts the file name of a database as a parameter and returns a list of
     dictionaries. The key:value pairs should be the name, category, building, and rating
     of each restaurant in the database.
     """
-    pass
+
+    path_data = os.path.dirname(os.path.abspath(__file__))
+    conn = sqlite3.connect(path_data+'/'+ db_filename)
+    cur = conn.cursor()
+    rest_list = []
+    cur.execute("SELECT name, building, category, rating FROM restaurants JOIN buildings ON restaurants.building_id = buildings.id JOIN categories ON restaurants.category_id = categories.id")
+    restaurant = cur.fetchall()
+    
+
+    for i in restaurant:
+        dict = {}
+        dict['name'] = i[0]
+        dict['category'] = i[2]
+        dict['building'] = i[1]
+        dict['rating'] = i[3]
+        rest_list.append(dict)
+    return rest_list
 
 def barchart_restaurant_categories(db_filename):
     """
@@ -17,7 +32,31 @@ def barchart_restaurant_categories(db_filename):
     restaurant categories and the values should be the number of restaurants in each category. The function should
     also create a bar chart with restaurant categories and the counts of each category.
     """
-    pass
+    path = os.path.dirname(os.path.abspath(__file__))
+    conn = sqlite3.connect(path+'/'+db_filename)
+    cur = conn.cursor()
+    cur.execute("SELECT COUNT(categories.category), categories.category FROM restaurants JOIN categories ON restaurants.category_id = categories.id GROUP BY category")
+    restaurant = cur.fetchall()
+
+    dict = {}
+    for i in restaurant:
+        count = i[0]
+        category = i[1]
+        dict[category] = count
+    
+    num_restaurants = []
+    category = []
+    for i in dict:
+        num_restaurants.append(i)
+        category.append(dict[i])
+    
+    plt.barh(num_restaurants, category)
+    plt.xlabel("Number of Restaurants")
+    plt.ylabel("Restaurant Categories")
+    plt.title("Types of Restaurants on South University Ave")
+    plt.show()
+
+    return dict
 
 #EXTRA CREDIT
 def highest_rated_category(db_filename):#Do this through DB as well
