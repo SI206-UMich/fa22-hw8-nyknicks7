@@ -24,6 +24,7 @@ def get_restaurant_data(db_filename):
         dict['building'] = restaurant[1]
         dict['rating'] = restaurant[3]
         list.append(dict)
+    
     return list
 
 def barchart_restaurant_categories(db_filename):
@@ -42,14 +43,15 @@ def barchart_restaurant_categories(db_filename):
         data_set[restaurant[0]] = data_set.get(restaurant, 0) + restaurant[1]
 
     groups = list(data_set.keys())
-    val = list(data_set.values())
+    ctg = list(data_set.values())
  
-    plt.barh(groups, val)
+    plt.title("Types of Restaurants on South University")
+    plt.barh(groups, ctg)
     plt.ylabel("Restaurant Categories")
-    plt.xlabel("No. of Restaurants")
-    plt.title("Types of Restaurants in South University")
+    plt.xlabel("Number of Restaurants")
     plt.tight_layout()
     plt.show()
+    
     return data_set
 
 #EXTRA CREDIT
@@ -64,7 +66,10 @@ def highest_rated_category(db_filename):#Do this through DB as well
 
 #Try calling your functions here
 def main():
-    pass
+    first_function = get_restaurant_data("South_U_Restaurants.db")
+    second_function = barchart_restaurant_categories("South_U_Restaurants.db")
+    print(first_function)
+    print(second_function)
 
 class TestHW8(unittest.TestCase):
     def setUp(self):
